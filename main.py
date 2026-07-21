@@ -155,7 +155,7 @@ def ask_gemini(prompt):
 
    # build the final prompt
 def build_index_from_file(path):
-    text = load_file_text("makerspace.docx")
+    text = load_file_text(path)
     chunks = chunk_data(text)
     embeddings = embed_chunks(chunks)
     create_faiss_index(chunks, embeddings)

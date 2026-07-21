@@ -1,4 +1,9 @@
 import streamlit as st
+import os
+
+# secrets ko env variable mein daalo, "import main" se PEHLE
+os.environ["api_key"] = st.secrets["api_key"]
+
 import main
 
 st.title("My RAG Chatbot")
@@ -11,11 +16,14 @@ if "history" not in st.session_state:
 uploaded = st.file_uploader("Upload document", type=["pdf", "docx", "txt"])
 
 if uploaded:
-    # Save uploaded file temporarily
-    with open("temp_file", "wb") as f:
+    # extension ke saath save karo, warna file type detect nahi hoga
+    ext = uploaded.name.split(".")[-1]
+    temp_path = f"temp_file.{ext}"
+
+    with open(temp_path, "wb") as f:
         f.write(uploaded.getvalue())
 
-    main.build_index_from_file("temp_file")
+    main.build_index_from_file(temp_path)
     st.success("Index built successfully!")
 
 # Ask question
@@ -30,7 +38,6 @@ if st.button("Ask"):
         ans = main.answer_query(query, st.session_state.history)
 
         # Add assistant message
-        
         st.session_state.history.append(("assistant", ans))
 
 # Show conversation
